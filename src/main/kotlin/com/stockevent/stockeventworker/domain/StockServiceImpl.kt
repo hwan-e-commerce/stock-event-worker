@@ -1,21 +1,24 @@
 package com.stockevent.stockeventworker.domain
 
-import com.stockevent.stockeventworker.infrastructure.StockRepository
-import com.stockevent.stockeventworker.web.StockDto
+import com.stockevent.stockeventworker.infrastructure.StockHistoryRepository
+import com.stockevent.stockeventworker.web.StockMessage
 import org.springframework.stereotype.Service
-import java.lang.IllegalArgumentException
 import javax.transaction.Transactional
+import kotlin.streams.toList
 
 @Service
 class StockServiceImpl(
-    private val stockRepository: StockRepository
+    private val stockRepository: StockHistoryRepository
 ) : StockService {
 
     @Transactional
-    override fun decreaseStock(stockDto: StockDto) {
-        val storedStock = stockRepository.findByItemToken(stockDto.itemToken)
-            .orElseThrow(::IllegalArgumentException)
+    override fun decreaseStock(stockMessage: StockMessage) {
+        val orderItems = stockMessage.orderInfos
 
-        storedStock.decreaseStock(stockDto.orderCnt);
+        val stockHistories = orderItems.stream()
+            .map { orderItemInfo -> StockHistory.of(orderItemInfo, stockMessage.type) }
+            .toList()
+
+        stockRepository.saveAll(stockHistories)
     }
 }

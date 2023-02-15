@@ -11,7 +11,9 @@ class StockSQSListener(
 ) {
     @SqsListener(value = ["stock-event-sqs.fifo"], deletionPolicy = SqsMessageDeletionPolicy.ON_SUCCESS)
     fun readMessage (message: StockMessage) {
-        val stockDto = message.toStockDto()
-        stockService.decreaseStock(stockDto)
+        println("message: $message")
+        if(message.type == "DECREASE") {
+            stockService.decreaseStock(message)
+        }
     }
 }

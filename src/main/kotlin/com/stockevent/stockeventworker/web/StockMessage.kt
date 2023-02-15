@@ -1,22 +1,17 @@
 package com.stockevent.stockeventworker.web
 
 data class StockMessage(
-    val itemToken: String,
-    val orderToken: String,
-    val orderCnt: Int,
-    val eventType: String
+    val orderInfos: List<OrderItemInfo>,
+    val type: String
 ) {
-    fun toStockDto(): StockDto {
-        return StockDto(
-            itemToken,
-            orderToken,
-            orderCnt
-        )
-    }
+    constructor() : this(listOf(), "")
 }
 
-data class StockDto(
-    val itemToken: String,
+data class OrderItemInfo(
     val orderToken: String,
-    val orderCnt: Int
-)
+    val itemToken: String,
+    val orderCnt: Int,
+    val orderedAt: String
+) {
+    constructor() : this("", "", 0, "")
+}
